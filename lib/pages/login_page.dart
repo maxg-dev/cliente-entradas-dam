@@ -1,10 +1,9 @@
-import 'package:cliente_entradas/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'admin_page.dart';
+import 'package:cliente_entradas/constants.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,38 +19,85 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Color(kColorFondo),
         appBar: AppBar(
-          title: Text('Login Page'),
-          leading: Icon(Icons.rocket),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Entradas y Eventos',
+                style: TextStyle(color: Color(kColorFondo)),
+              ),
+              Text(
+                'Desarrolo de aplicaciones móviles',
+                style: TextStyle(fontSize: 10, color: Color(kColorSecundario)),
+              )
+            ],
+          ),
+          leading: Icon(MdiIcons.ticketConfirmation, color: Color(kColorFondo)),
+          backgroundColor: Color(kColorPrimario),
         ),
         body: Container(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.all(40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30),
+                child: Text(
+                  'Inicio de sesión',
+                  style: TextStyle(
+                      fontSize: 40,
+                      color: Color(kColorPrimario),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
-                  labelText: 'Email',
-                  icon: Icon(Icons.email),
-                ),
+                    labelText: 'Correo',
+                    icon: Icon(Icons.email, color: Color(kColorPrimario)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30))),
               ),
               SizedBox(height: 15),
               TextField(
                 controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Password',
-                  icon: Icon(Icons.vpn_key),
+                  labelText: 'Contraseña',
+                  icon: Icon(Icons.vpn_key, color: Color(kColorPrimario)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
                 ),
               ),
               SizedBox(height: 15),
-              ElevatedButton(
-                child: Text('google login'),
-                onPressed: () => signInWithGoogle(),
-              ),
-              ElevatedButton(
-                child: Text('Login'),
-                onPressed: () => login(),
+              Row(
+                children: [
+                  Spacer(),
+                  ElevatedButton(
+                    child: Text('Iniciar sesión'),
+                    onPressed: () => login(),
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStatePropertyAll(Color(kColorFondo)),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Color(kColorBoton))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: ElevatedButton(
+                      child: Icon(MdiIcons.google),
+                      onPressed: () => signInWithGoogle(),
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStatePropertyAll(Color(kColorFondo)),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Color(kColorPrimario)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

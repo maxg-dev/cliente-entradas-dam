@@ -1,8 +1,11 @@
 import 'package:cliente_entradas/constants.dart';
 import 'package:cliente_entradas/pages/agregar_evento_page.dart';
+import 'package:cliente_entradas/pages/editar_evento_page.dart';
 import 'package:cliente_entradas/services/auth_service.dart';
+import 'package:cliente_entradas/services/eventos_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../services/firestore_service.dart';
@@ -15,7 +18,9 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  bool status = true;
+  var fnumber =
+      NumberFormat.currency(locale: 'es-CL', decimalDigits: 0, symbol: '');
+  var fFecha = DateFormat('dd-MM-yyyy');
   final formKey = GlobalKey<FormState>();
   TextEditingController tituloController = TextEditingController();
   TextEditingController cuerpoController = TextEditingController();
@@ -122,17 +127,38 @@ class _AdminPageState extends State<AdminPage> {
   Column vistaListaEventos() {
     return Column(
       children: [
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.all(15),
-            children: [
-              listTileEvento('Concierto Daddy Yankee', 'Movistar arena',
-                  '18 de octubre', 130),
-              listTileEvento(
-                  'Concierto Shakira', 'Espacio riesco', '30 de diciembre', 25),
-              listTileEvento('Concierto Michi', 'Mi casa', '3 de diciembre', 1),
-            ],
-          ),
+        FutureBuilder(
+          future: EventosProvider().getEventos(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Center(
+                  child:
+                      CircularProgressIndicator(color: Color(kColorPrimario)),
+                ),
+              );
+            }
+            return Expanded(
+              child: ListView.separated(
+                padding: EdgeInsets.all(15),
+                separatorBuilder: (context, index) => Divider(),
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  var evento = snapshot.data[index];
+                  return listTileEvento(
+                      evento['id'],
+                      evento['nombre'],
+                      evento['direccion'],
+                      evento['fecha'],
+                      evento['entradas_vendidas'],
+                      evento['precio'],
+                      evento['estado']);
+                },
+              ),
+            );
+          },
         ),
         Container(
           padding: EdgeInsets.all(15),
@@ -145,7 +171,9 @@ class _AdminPageState extends State<AdminPage> {
                 MaterialPageRoute route = new MaterialPageRoute(
                   builder: (context) => AgregarEventoPage(),
                 );
-                Navigator.push(context, route);
+                Navigator.push(context, route).then(
+                  (value) => setState(() {}),
+                );
               }),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -160,20 +188,32 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-  Slidable listTileEvento(titulo, direccion, fecha, vendidas) {
+  Slidable listTileEvento(
+      id, titulo, direccion, fecha, vendidas, precio, estado) {
+    estado = estado == 0 ? false : true;
     return Slidable(
       startActionPane: ActionPane(
         motion: DrawerMotion(),
         children: [
           SlidableAction(
             backgroundColor: Color(kColorTernario),
-            onPressed: (context) {},
+            onPressed: (context) async {
+              await EventosProvider().borrar(id);
+              setState(() {});
+            },
             icon: MdiIcons.delete,
             label: 'Borrar',
           ),
           SlidableAction(
             backgroundColor: Color(kColorSecundario),
-            onPressed: (context) {},
+            onPressed: (context) {
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => EditarEventoPage(id),
+              );
+              Navigator.push(context, route).then(
+                (value) => setState(() {}),
+              );
+            },
             icon: Icons.add,
             label: 'Editar',
           ),
@@ -192,24 +232,44 @@ class _AdminPageState extends State<AdminPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${direccion} - ${fecha}',
+              '${direccion} - ${fFecha.format(DateTime.parse(fecha))}',
               style: TextStyle(color: Color(kColorSecundario)),
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 1, top: 5),
-              child: Text(
-                'Entradas vendidas: ${vendidas}',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-              ),
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 1, top: 5),
+                  child: Text(
+                    'Entradas vendidas: ${vendidas}',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Color(kColorPrimario)),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, top: 5),
+                  child: Text(
+                    'Precio: \$ ${fnumber.format(precio)}',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Color(kColorPrimario)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
         trailing: Switch(
           activeColor: Color(kColorPrimario),
           inactiveThumbColor: Color(kColorFondo),
-          value: status,
-          onChanged: (value) {
-            setState(() => status = value);
+          value: estado,
+          onChanged: (value) async {
+            await EventosProvider().cambiarEstado(
+                id, titulo, fecha, direccion, precio, value == true ? 1 : 0);
+
+            setState(() => estado = value);
           },
         ),
       ),

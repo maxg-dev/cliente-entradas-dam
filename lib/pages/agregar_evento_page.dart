@@ -1,4 +1,5 @@
 import 'package:cliente_entradas/constants.dart';
+import 'package:cliente_entradas/services/eventos_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -66,11 +67,17 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
                 ),
                 Text(
                   fFecha.format(fechaSeleccionada),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(kColorPrimario)),
                 ),
                 Spacer(),
                 IconButton(
-                  icon: Icon(MdiIcons.calendar),
+                  icon: Icon(
+                    MdiIcons.calendar,
+                    color: Color(kColorPrimario),
+                  ),
                   onPressed: () {
                     showDatePicker(
                       context: context,
@@ -96,7 +103,24 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
                         MaterialStatePropertyAll(Color(kColorFondo)),
                     backgroundColor:
                         MaterialStatePropertyAll(Color(kColorBoton))),
-                onPressed: () {},
+                onPressed: () async {
+                  // data
+                  String nombre = nombreController.text.trim();
+                  String direccion = direccionController.text.trim();
+                  int precio = int.parse(precioController.text.trim());
+                  String fecha = fechaSeleccionada.toString();
+
+                  var respuesta = await EventosProvider()
+                      .agregar(nombre, fecha, direccion, precio);
+
+                  if (respuesta['message'] != null) {
+                    var errores = respuesta['errors'];
+                    setState(() {});
+                    return;
+                  }
+
+                  Navigator.pop(context);
+                },
                 child: Text('Agregar'),
               ),
             ),

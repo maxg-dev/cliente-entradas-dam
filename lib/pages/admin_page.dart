@@ -1,4 +1,5 @@
 import 'package:cliente_entradas/constants.dart';
+import 'package:cliente_entradas/pages/agregar_evento_page.dart';
 import 'package:cliente_entradas/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -140,7 +141,12 @@ class _AdminPageState extends State<AdminPage> {
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStatePropertyAll(Color(kColorBoton))),
-              onPressed: (() {}),
+              onPressed: (() {
+                MaterialPageRoute route = new MaterialPageRoute(
+                  builder: (context) => AgregarEventoPage(),
+                );
+                Navigator.push(context, route);
+              }),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.end,

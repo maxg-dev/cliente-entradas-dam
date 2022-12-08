@@ -32,11 +32,17 @@ class _CustomerPageState extends State<CustomerPage> {
       backgroundColor: Color(kColorFondo),
       appBar: AppBar(
         backgroundColor: Color(kColorPrimario),
-        leading: ProfilePicture(
-          name: 'UserPP',
-          radius: 31,
-          fontsize: 30,
-          img: FirebaseAuth.instance.currentUser!.photoURL,
+        leading: Align(
+          alignment: Alignment.bottomCenter,
+          child: AspectRatio(
+            aspectRatio: 11 / 15,
+            child: ProfilePicture(
+              name: 'UserPP',
+              radius: 31,
+              fontsize: 30,
+              img: FirebaseAuth.instance.currentUser!.photoURL,
+            ),
+          ),
         ),
         title: Row(
           children: [

@@ -153,22 +153,28 @@ class _AdminPageState extends State<AdminPage> {
               );
             }
             return Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.all(15),
-                separatorBuilder: (context, index) => Divider(),
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  var evento = snapshot.data[index];
-                  return listTileEvento(
-                      context,
-                      evento['id'],
-                      evento['nombre'],
-                      evento['direccion'],
-                      evento['fecha'],
-                      evento['entradas_vendidas'],
-                      evento['precio'],
-                      evento['estado']);
-                },
+              child: Scrollbar(
+                thickness: 5,
+                radius: Radius.circular(30),
+                trackVisibility: true,
+                thumbVisibility: true,
+                child: ListView.separated(
+                  padding: EdgeInsets.all(15),
+                  separatorBuilder: (context, index) => Divider(),
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    var evento = snapshot.data[index];
+                    return listTileEvento(
+                        context,
+                        evento['id'],
+                        evento['nombre'],
+                        evento['direccion'],
+                        evento['fecha'],
+                        evento['entradas_vendidas'],
+                        evento['precio'],
+                        evento['estado']);
+                  },
+                ),
               ),
             );
           },

@@ -35,6 +35,13 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
             TextFormField(
               controller: nombreController,
               keyboardType: TextInputType.text,
+              maxLength: 50,
+              validator: (valor) {
+                if (valor == null || valor.isEmpty) {
+                  return 'Indique nombre del evento';
+                }
+                return null;
+              },
               decoration: InputDecoration(
                   labelText: 'Nombre del evento',
                   border: OutlineInputBorder(
@@ -44,6 +51,13 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
             TextFormField(
               controller: direccionController,
               keyboardType: TextInputType.text,
+              maxLength: 100,
+              validator: (valor) {
+                if (valor == null || valor.isEmpty) {
+                  return 'Indique direccion del evento';
+                }
+                return null;
+              },
               decoration: InputDecoration(
                   labelText: 'Dirección del evento',
                   border: OutlineInputBorder(
@@ -51,6 +65,16 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
             ),
             Divider(color: Color(kColorFondo)),
             TextFormField(
+              validator: (valor) {
+                if (valor == null || valor.isEmpty) {
+                  return 'Indique precio de la entrada';
+                }
+                if (int.parse(valor) < 1) {
+                  return 'Ingrese precio mayor a 0';
+                }
+                return null;
+              },
+              maxLength: 7,
               controller: precioController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
@@ -104,22 +128,26 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
                     backgroundColor:
                         MaterialStatePropertyAll(Color(kColorBoton))),
                 onPressed: () async {
-                  // data
-                  String nombre = nombreController.text.trim();
-                  String direccion = direccionController.text.trim();
-                  int precio = int.parse(precioController.text.trim());
-                  String fecha = fechaSeleccionada.toString();
+                  if (formKey.currentState!.validate()) {
+                    //form ok
+                    String nombre = nombreController.text.trim();
+                    String direccion = direccionController.text.trim();
+                    int precio = int.parse(precioController.text.trim());
+                    String fecha = fechaSeleccionada.toString();
 
-                  var respuesta = await EventosProvider()
-                      .agregar(nombre, fecha, direccion, precio);
+                    var respuesta = await EventosProvider()
+                        .agregar(nombre, fecha, direccion, precio);
 
-                  if (respuesta['message'] != null) {
-                    var errores = respuesta['errors'];
-                    setState(() {});
-                    return;
+                    if (respuesta['message'] != null) {
+                      var errores = respuesta['errors'];
+                      setState(() {});
+                      return;
+                    }
+
+                    Navigator.pop(context);
                   }
 
-                  Navigator.pop(context);
+                  // data
                 },
                 child: Text('Agregar'),
               ),

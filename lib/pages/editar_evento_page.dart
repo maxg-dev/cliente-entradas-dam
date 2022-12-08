@@ -71,6 +71,12 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
                     TextFormField(
                       controller: nombreController,
                       keyboardType: TextInputType.text,
+                      maxLength: 50,
+                      validator: (valor) {
+                        if (valor == null || valor.isEmpty) {
+                          return 'Indique nombre del evento';
+                        }
+                      },
                       decoration: InputDecoration(
                           labelText: 'Nombre del evento',
                           border: OutlineInputBorder(
@@ -79,8 +85,14 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
                     ),
                     Divider(color: Color(kColorFondo)),
                     TextFormField(
+                      maxLength: 100,
                       controller: direccionController,
                       keyboardType: TextInputType.text,
+                      validator: (valor) {
+                        if (valor == null || valor.isEmpty) {
+                          return 'Indique dirección del evento';
+                        }
+                      },
                       decoration: InputDecoration(
                           labelText: 'Dirección del evento',
                           border: OutlineInputBorder(
@@ -89,8 +101,18 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
                     ),
                     Divider(color: Color(kColorFondo)),
                     TextFormField(
+                      maxLength: 7,
                       controller: precioController,
                       keyboardType: TextInputType.number,
+                      validator: (valor) {
+                        if (valor == null || valor.isEmpty) {
+                          return 'Indique precio de la entrada';
+                        }
+                        if (int.parse(valor) < 1) {
+                          return 'Ingrese precio mayor a 0';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                           labelText: 'Precio entrada',
                           border: OutlineInputBorder(
@@ -143,28 +165,31 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
                             backgroundColor:
                                 MaterialStatePropertyAll(Color(kColorBoton))),
                         onPressed: () async {
-                          // data
-                          String nombre = nombreController.text.trim();
-                          String direccion = direccionController.text.trim();
-                          int precio = int.parse(precioController.text.trim());
-                          String fecha = fechaSeleccionada.toString();
+                          if (formKey.currentState!.validate()) {
+                            // data
+                            String nombre = nombreController.text.trim();
+                            String direccion = direccionController.text.trim();
+                            int precio =
+                                int.parse(precioController.text.trim());
+                            String fecha = fechaSeleccionada.toString();
 
-                          var respuesta = await EventosProvider().update(
-                              widget.id,
-                              nombre,
-                              fecha,
-                              direccion,
-                              precio,
-                              estado);
+                            var respuesta = await EventosProvider().update(
+                                widget.id,
+                                nombre,
+                                fecha,
+                                direccion,
+                                precio,
+                                estado);
 
-                          if (respuesta['message'] != null) {
-                            print(respuesta);
-                            var errores = respuesta['errors'];
-                            setState(() {});
-                            return;
+                            if (respuesta['message'] != null) {
+                              print(respuesta);
+                              var errores = respuesta['errors'];
+                              setState(() {});
+                              return;
+                            }
+
+                            Navigator.pop(context);
                           }
-
-                          Navigator.pop(context);
                         },
                         child: Text('Editar'),
                       ),

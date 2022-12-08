@@ -72,7 +72,7 @@ class _VistaEntradasState extends State<VistaEntradas> {
       leading: Icon(MdiIcons.ticketConfirmation, color: Color(kColorPrimario)),
       trailing: ElevatedButton(
         style: ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll(Color(kColorSecundario)),
+            backgroundColor: MaterialStatePropertyAll(Color(kColorBoton)),
             foregroundColor: MaterialStatePropertyAll(Color(kColorFondo))),
         onPressed: () {
           // Ver detalle de una entrada

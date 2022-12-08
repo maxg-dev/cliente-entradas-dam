@@ -21,4 +21,10 @@ class EntradasProvider {
     var respuesta = await http.get(Uri.parse(apiURL + '/entradas'));
     return respuesta.statusCode == 200 ? json.decode(respuesta.body) : [];
   }
+
+  Future<LinkedHashMap<String, dynamic>> get(int id) async {
+    var respuesta =
+        await http.get(Uri.parse(apiURL + '/entradas/' + id.toString()));
+    return respuesta.statusCode == 200 ? json.decode(respuesta.body) : [];
+  }
 }

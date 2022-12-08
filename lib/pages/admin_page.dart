@@ -79,6 +79,11 @@ class _AdminPageState extends State<AdminPage> {
         child: Column(
           children: [
             TextFormField(
+              validator: (valor) {
+                if (valor == null || valor.isEmpty) {
+                  return 'Ingrese titulo de la noticia';
+                }
+              },
               controller: tituloController,
               decoration: InputDecoration(
                   labelText: 'Título',
@@ -87,6 +92,11 @@ class _AdminPageState extends State<AdminPage> {
             ),
             Divider(),
             TextFormField(
+              validator: (valor) {
+                if (valor == null || valor.isEmpty) {
+                  return 'Ingrese cuerpo de la noticia';
+                }
+              },
               maxLines: 5,
               controller: cuerpoController,
               decoration: InputDecoration(
@@ -106,14 +116,16 @@ class _AdminPageState extends State<AdminPage> {
                     backgroundColor:
                         MaterialStatePropertyAll(Color(kColorBoton))),
                 onPressed: () {
-                  FirestoreService().agregar(
-                    tituloController.text.trim(),
-                    cuerpoController.text.trim(),
-                  );
-                  setState(() {
-                    tituloController.text = '';
-                    cuerpoController.text = '';
-                  });
+                  if (formKey.currentState!.validate()) {
+                    FirestoreService().agregar(
+                      tituloController.text.trim(),
+                      cuerpoController.text.trim(),
+                    );
+                    setState(() {
+                      tituloController.text = '';
+                      cuerpoController.text = '';
+                    });
+                  }
                 },
                 child: Text('Publicar'),
               ),

@@ -16,6 +16,9 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String error = '';
+  String emailRegex =
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,69 +40,97 @@ class _LoginPageState extends State<LoginPage> {
           leading: Icon(MdiIcons.ticketConfirmation, color: Color(kColorFondo)),
           backgroundColor: Color(kColorPrimario),
         ),
-        body: Container(
-          padding: EdgeInsets.all(40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30),
-                child: Text(
-                  'Inicio de sesión',
-                  style: TextStyle(
-                      fontSize: 40,
-                      color: Color(kColorPrimario),
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                    labelText: 'Correo',
-                    icon: Icon(Icons.email, color: Color(kColorPrimario)),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30))),
-              ),
-              SizedBox(height: 15),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  icon: Icon(Icons.vpn_key, color: Color(kColorPrimario)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                ),
-              ),
-              SizedBox(height: 15),
-              Row(
-                children: [
-                  Spacer(),
-                  ElevatedButton(
-                    child: Text('Iniciar sesión'),
-                    onPressed: () => login(),
-                    style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStatePropertyAll(Color(kColorFondo)),
-                        backgroundColor:
-                            MaterialStatePropertyAll(Color(kColorBoton))),
+        body: Form(
+          key: formKey,
+          child: Container(
+            padding: EdgeInsets.all(40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  child: Text(
+                    'Inicio de sesión',
+                    style: TextStyle(
+                        fontSize: 40,
+                        color: Color(kColorPrimario),
+                        fontWeight: FontWeight.bold),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: ElevatedButton(
-                      child: Icon(MdiIcons.google),
-                      onPressed: () => signInWithGoogle(),
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese su correo';
+                    }
+                    if (!RegExp(emailRegex).hasMatch(value)) {
+                      return 'Formato de email no válido';
+                    }
+                    return null;
+                  },
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                      labelText: 'Correo',
+                      icon: Icon(Icons.email, color: Color(kColorPrimario)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30))),
+                ),
+                SizedBox(height: 15),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese su contraseña';
+                    }
+                    return null;
+                  },
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    icon: Icon(Icons.vpn_key, color: Color(kColorPrimario)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                  ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  error,
+                  style: TextStyle(color: Colors.red),
+                ),
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Spacer(),
+                    ElevatedButton(
+                      child: Text('Iniciar sesión'),
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          login();
+                        }
+                      },
                       style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStatePropertyAll(Color(kColorFondo)),
-                        backgroundColor:
-                            MaterialStatePropertyAll(Color(kColorPrimario)),
+                          foregroundColor:
+                              MaterialStatePropertyAll(Color(kColorFondo)),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Color(kColorBoton))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15),
+                      child: ElevatedButton(
+                        child: Icon(MdiIcons.google),
+                        onPressed: () => signInWithGoogle(),
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStatePropertyAll(Color(kColorFondo)),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Color(kColorPrimario)),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ));
   }
@@ -135,10 +166,10 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (ex) {
       switch (ex.code) {
         case 'user-not-found':
-          error = 'Usuario no existe';
+          error = 'Credenciales incorrectas';
           break;
         case 'wrong-password':
-          error = 'Contraseña incorrecta';
+          error = 'Credenciales incorrectas';
           break;
         case 'user-disabled':
           error = 'Cuenta desactivada';

@@ -5,6 +5,7 @@ import 'package:cliente_entradas/pages/customer_tabs/vista_noticias.dart';
 import 'package:cliente_entradas/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -31,13 +32,27 @@ class _CustomerPageState extends State<CustomerPage> {
       backgroundColor: Color(kColorFondo),
       appBar: AppBar(
         backgroundColor: Color(kColorPrimario),
-        leading: Icon(MdiIcons.faceMan, color: Color(kColorFondo)),
-        title: Text(
-          "Hola! " + FirebaseAuth.instance.currentUser!.displayName!,
-          style: TextStyle(color: Color(kColorFondo)),
+        leading: ProfilePicture(
+          name: 'UserPP',
+          radius: 31,
+          fontsize: 30,
+          img: FirebaseAuth.instance.currentUser!.photoURL,
+        ),
+        title: Row(
+          children: [
+            Text(
+              "Hola! ",
+              style: TextStyle(color: Color(kColorFondo)),
+            ),
+            Text(
+              FirebaseAuth.instance.currentUser!.displayName!,
+              style: TextStyle(color: Color(kColorTernario)),
+            )
+          ],
         ),
         actions: [
           PopupMenuButton(
+            icon: Icon(MdiIcons.logout, color: Color(kColorFondo)),
             color: Color(kColorFondo),
             itemBuilder: (context) => [
               PopupMenuItem(

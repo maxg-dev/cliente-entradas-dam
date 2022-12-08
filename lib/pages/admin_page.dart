@@ -160,6 +160,7 @@ class _AdminPageState extends State<AdminPage> {
                 itemBuilder: (context, index) {
                   var evento = snapshot.data[index];
                   return listTileEvento(
+                      context,
                       evento['id'],
                       evento['nombre'],
                       evento['direccion'],
@@ -201,7 +202,7 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   Slidable listTileEvento(
-      id, titulo, direccion, fecha, vendidas, precio, estado) {
+      padrecontext, id, titulo, direccion, fecha, vendidas, precio, estado) {
     estado = estado == 0 ? false : true;
     return Slidable(
       startActionPane: ActionPane(
@@ -210,8 +211,51 @@ class _AdminPageState extends State<AdminPage> {
           SlidableAction(
             backgroundColor: Color(kColorTernario),
             onPressed: (context) async {
-              await EventosProvider().borrar(id);
-              setState(() {});
+              var evento = await EventosProvider().get(id);
+              if (evento['estado'] == 1 && evento['entradas_vendidas'] != 0) {
+                return showDialog(
+                  barrierDismissible: false,
+                  context: padrecontext,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Error!'),
+                      content: Text(
+                          'No puede eliminar un evento vigente con entradas compradas'),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('Aceptar')),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                return showDialog(
+                  barrierDismissible: false,
+                  context: padrecontext,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Eliminar'),
+                      content: Text('¿Desea eliminar ${evento['nombre']}?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text('Aceptar'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('Cancelar'),
+                        )
+                      ],
+                    );
+                  },
+                ).then((value) async {
+                  if (value) {
+                    await EventosProvider().borrar(id);
+                    setState(() {});
+                  }
+                });
+              }
             },
             icon: MdiIcons.delete,
             label: 'Borrar',

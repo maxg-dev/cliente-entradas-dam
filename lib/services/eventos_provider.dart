@@ -33,6 +33,11 @@ class EventosProvider {
     return respuesta.statusCode == 200 ? json.decode(respuesta.body) : [];
   }
 
+  Future<List<dynamic>> getEventosEstado() async {
+    var respuesta = await http.get(Uri.parse(apiURL + '/estado'));
+    return respuesta.statusCode == 200 ? json.decode(respuesta.body) : [];
+  }
+
   Future<LinkedHashMap<String, dynamic>> cambiarEstado(int id, String nombre,
       String fecha, String direccion, int precio, int estado) async {
     var respuesta = await http.put(
@@ -73,9 +78,6 @@ class EventosProvider {
     var respuesta =
         await http.get(Uri.parse(apiURL + '/eventos/' + id.toString()));
 
-    if (respuesta.body.isNotEmpty) {
-      json.decode(respuesta.body);
-    }
     if (respuesta.statusCode == 200) {
       return json.decode(respuesta.body);
     } else {

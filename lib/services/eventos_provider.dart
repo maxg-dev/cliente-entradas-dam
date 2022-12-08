@@ -26,10 +26,6 @@ class EventosProvider {
 
   Future<List<dynamic>> getEventos() async {
     var respuesta = await http.get(Uri.parse(apiURL + '/eventos'));
-
-    if (respuesta.body.isNotEmpty) {
-      json.decode(respuesta.body);
-    }
     return respuesta.statusCode == 200 ? json.decode(respuesta.body) : [];
   }
 

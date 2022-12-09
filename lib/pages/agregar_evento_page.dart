@@ -69,8 +69,8 @@ class _AgregarEventoPageState extends State<AgregarEventoPage> {
                 if (valor == null || valor.isEmpty) {
                   return 'Indique precio de la entrada';
                 }
-                if (int.parse(valor) < 1) {
-                  return 'Ingrese precio mayor a 0';
+                if (int.parse(valor) < 0) {
+                  return 'Ingrese precio válido';
                 }
                 return null;
               },

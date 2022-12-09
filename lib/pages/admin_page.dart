@@ -84,6 +84,7 @@ class _AdminPageState extends State<AdminPage> {
                   return 'Ingrese titulo de la noticia';
                 }
               },
+              maxLength: 50,
               controller: tituloController,
               decoration: InputDecoration(
                   labelText: 'Título',
@@ -97,6 +98,7 @@ class _AdminPageState extends State<AdminPage> {
                   return 'Ingrese cuerpo de la noticia';
                 }
               },
+              maxLength: 200,
               maxLines: 5,
               controller: cuerpoController,
               decoration: InputDecoration(
